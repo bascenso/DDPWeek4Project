@@ -1,0 +1,51 @@
+---
+title: "Clan Stats Shiny App"
+author: "Bruno Ascenso"
+date: "Novembr 19, 2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Overview
+
+This presentation describes the shiny app created for week 4 assignment of the course Developing Data Products on Coursera.
+
+The instructions were: "*Write a shiny application with associated supporting documentation*".  
+
+So I decided to create a very simple app that is useful to one of my hobbies: playing the mobile game **Clash Royale.**  
+Clash Royale is mobile game which pits players in games featuring two or four players (1v1 or 2v2) in which the objective is to destroy the opposing towers. Games are played using a selected deck of 8 cards. As of November 2018, there are 89 cards in the game.  
+More info: https://en.wikipedia.org/wiki/Clash_Royale.
+
+## Context
+
+### Clan mechanics
+In the game, players can join or form clans. Joining or forming a clan enables the player to engage in friendly battles and clan wars. It also unlocks the feature of trading and requesting cards from clanmates. A clan has maximum player limit of 50 members.
+
+### My clan
+I currently run a clan called Alkateia PT. If you also play feel free to add me as friend in the game ([#2UVYQPG2J](https://link.clashroyale.com/invite/friend/en?tag=2UVYQPG2J&token=sgmxn34g)) or drop by my clan whenever there is a place available (#PG8VC9V).
+
+## Objective of the app
+The purpose of the app is to show me how the clan is evolving over the time. I included a data set with a series of average metrics over the last two months.
+
+### Available metrics
+The metrics available to plot are:
+```{r}
+clanStatsDF <- readRDS("clanStats/stats.RDS")
+names(clanStatsDF)[2:11]
+```
+
+### Link
+You may try the app here: https://bascenso.shinyapps.io/clanStats/
+
+
+## Usage
+
+To use the app:  
+- Select a stat to plot from the the combo box  
+- Select a color to draw the plot  
+- Select if you want to include a line at the mean  
+
+### Thanks for reviewing!
