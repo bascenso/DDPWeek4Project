@@ -1,51 +1,78 @@
 ---
-title: "Clan Stats Shiny App"
+title: "Apple Health Data App"
 author: "Bruno Ascenso"
-date: "Novembr 19, 2018"
-output: ioslides_presentation
+date: "November 22, 2018"
+output: 
+    ioslides_presentation:
+        smaller: true
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+health <- readRDS("myHealth/health.RDS")
 ```
 
 ## Overview
 
-This presentation describes the shiny app created for week 4 assignment of the course Developing Data Products on Coursera.
+This presentation describes the shiny app created for week 4 assignment of the course Developing Data Products on Coursera.  
 
 The instructions were: "*Write a shiny application with associated supporting documentation*".  
 
-So I decided to create a very simple app that is useful to one of my hobbies: playing the mobile game **Clash Royale.**  
-Clash Royale is mobile game which pits players in games featuring two or four players (1v1 or 2v2) in which the objective is to destroy the opposing towers. Games are played using a selected deck of 8 cards. As of November 2018, there are 89 cards in the game.  
-More info: https://en.wikipedia.org/wiki/Clash_Royale.
+So I decided to (finally) get the data collected by my iPhone and Apple watch and see what's there. For this assignment I downloaded only two metrics:  
+- Heart rate (count/min averaged over 1 hour periods)  
+- Number of steps per hour
 
-## Context
+To download the data I used the app QS Access by [Quantified Self Labs](http://quantifiedself.com/).  
 
-### Clan mechanics
-In the game, players can join or form clans. Joining or forming a clan enables the player to engage in friendly battles and clan wars. It also unlocks the feature of trading and requesting cards from clanmates. A clan has maximum player limit of 50 members.
+The data ranges from **December 19, 2016** (when I started collecting) up to **today**.
 
-### My clan
-I currently run a clan called Alkateia PT. If you also play feel free to add me as friend in the game ([#2UVYQPG2J](https://link.clashroyale.com/invite/friend/en?tag=2UVYQPG2J&token=sgmxn34g)) or drop by my clan whenever there is a place available (#PG8VC9V).
+## A glance at the data
 
-## Objective of the app
-The purpose of the app is to show me how the clan is evolving over the time. I included a data set with a series of average metrics over the last two months.
-
-### Available metrics
-The metrics available to plot are:
+#### This is how the data looks like:
 ```{r}
-clanStatsDF <- readRDS("clanStats/stats.RDS")
-names(clanStatsDF)[2:11]
+str(health)
+head(health)
 ```
 
-### Link
-You may try the app here: https://bascenso.shinyapps.io/clanStats/
+
+## Usage of the app
+
+The app is available at: https://bascenso.shinyapps.io/myHealth/  
+
+It plots two metrics:
+
+### 1. Histogram of heart rate
+Select a date range and it will show a histogram plot of my heart rate between those two dates, along with min, max and mean statistics.
+
+### 2. Plot of steps
+Select a date range and a grouping period and it will show a plot of the steps that I walked between those dates (grouped by day, week or month).
 
 
-## Usage
+## Sample output
+This is how the output looks like:
 
-To use the app:  
-- Select a stat to plot from the the combo box  
-- Select a color to draw the plot  
-- Select if you want to include a line at the mean  
+```{r, fig.width=8, fig.height=2.3}
 
-### Thanks for reviewing!
+stepsData <- health[(as.Date(health$finish) > as.Date("2017-12-01")) 
+                    & (as.Date(health$finish) < as.Date("2018-10-31")), c("finish", "steps")]
+
+stepsData$period <- strftime(stepsData$finish, format = "%Y-%b")
+
+p1 <- ggplot(health[(health$hrate != 0) , ])
+p1 <- p1 + aes(hrate)
+p1 <- p1 + geom_histogram(binwidth = 5, color = "red", fill = "orange")
+p1 <- p1 + theme_classic() + theme(legend.position = "none")
+p1 <- p1 + labs(x = "Heart rate (count/min)", y = "Number of occurrences")
+print(p1)
+
+p2 <- ggplot(stepsData)
+p2 <- p2 + aes(period, steps, fill = steps)
+p2 <- p2 + geom_bar(stat = "identity", fill = "skyblue")
+p2 <- p2 + theme_classic() + theme(legend.position = "none")
+p2 <- p2 + labs(x = "Month", y = "Total steps")
+print(p2)
+
+```
+
